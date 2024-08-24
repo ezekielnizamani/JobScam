@@ -1,23 +1,24 @@
 # Use the official Golang image
 FROM golang:1.23-alpine
 
+# Install CompileDaemon for hot reloading
+RUN go install github.com/githubnemo/CompileDaemon@latest
+
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy go.mod and go.sum files
-COPY go.mod go.sum ./
+# Install any system dependencies if needed
+RUN apk add --no-cache bash
 
-# Download all dependencies
+# Install go modules
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the source code
+# Copy the source code (initial setup, not necessary with bind mount)
 COPY . .
 
-# Build the Go app
-RUN go build -o main .
-
-# Expose the port on which the app will run
+# Expose the port the app runs on
 EXPOSE 8080
 
-# Command to run the executable
-CMD ["./main"]
+# Run the application with hot reloading
+CMD ["CompileDaemon", "--build=go build -o main .", "--command=./main"]

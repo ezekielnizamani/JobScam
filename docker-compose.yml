@@ -16,7 +16,8 @@ services:
       - DB_PASSWORD=yourpassword
       - DB_NAME=yourdbname
     volumes:
-      - ./backend/src:/app/src
+      - ./backend:/app/src
+    command: CompileDaemon --build="go build -o main ." --command=./main
     networks:
       - backend
 
